@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ps">
+<head>
+<meta charset="UTF-8">
+<title>UMARI SHOES</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f3f5fa;--card:#fff;--text:#111;--brand:#111;--accent:#27ae60}
+.dark{--bg:#111;--card:#1e1e1e;--text:#f3f3f3;--brand:#fff}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Poppins;background:var(--bg);color:var(--text);transition:0.3s}
+header{background:linear-gradient(90deg,#000,#333);color:#fff;padding:12px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+header .logo{display:flex;align-items:center;gap:10px;flex:1}
+header .logo img{height:50px;border-radius:10px}
+header .logo h1{font-size:22px}
+header input{flex:2;padding:10px;border-radius:20px;border:none;outline:none}
+header select{padding:10px;border-radius:20px;border:none;outline:none;cursor:pointer}
+header button{padding:10px 14px;border-radius:20px;border:none;background:#27ae60;color:#fff;cursor:pointer}
+header .socials{display:flex;gap:10px;align-items:center}
+header .socials a{color:#fff;font-weight:bold;text-decoration:none;padding:6px 10px;border-radius:10px}
+header .socials a.fb{background:#4267B2}
+header .socials a.wa{background:#25D366}
+.products{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:16px;padding:16px;transition:0.3s}
+.card{background:var(--card);border-radius:16px;box-shadow:0 10px 25px rgba(0,0,0,.15);overflow:hidden;cursor:pointer;transition:transform 0.3s, box-shadow 0.3s}
+.card:hover{transform:translateY(-5px);box-shadow:0 15px 35px rgba(0,0,0,.25)}
+.card img{width:100%;height:150px;object-fit:cover}
+.info{text-align:center;padding:8px}
+.price{color:#27ae60;font-weight:700}
+.old{color:#aaa;text-decoration:line-through;font-size:12px}
+#detail{display:none;padding:16px}
+.detailBox{background:var(--card);border-radius:18px;box-shadow:0 10px 35px rgba(0,0,0,.2);padding:16px;max-width:500px;margin:auto}
+.detailBox img{width:100%;border-radius:14px;margin-bottom:12px}
+.buy,.add{width:100%;padding:12px;border:none;border-radius:30px;margin-top:10px;font-size:16px;cursor:pointer;transition:0.3s}
+.buy{background:#27ae60;color:#fff}
+.add{background:#000;color:#fff}
+.buy:hover,.add:hover{opacity:0.9}
+.back{padding:8px 16px;border:none;border-radius:20px;margin-bottom:12px;cursor:pointer}
+#cartBtn{position:fixed;bottom:15px;right:15px;background:#27ae60;color:#fff;border:none;border-radius:50%;width:56px;height:56px;font-size:22px;cursor:pointer;z-index:1000;transition:0.3s}
+#cartBtn:hover{transform:scale(1.1)}
+#cart{display:none;position:fixed;inset:0;background:var(--bg);padding:16px;overflow:auto;z-index:1000}
+.cartItem{background:var(--card);padding:10px;border-radius:12px;margin-bottom:8px;display:flex;gap:10px;align-items:center}
+.cartItem img{width:60px;height:60px;border-radius:10px;object-fit:cover}
+.cartItem .quantity{margin-left:auto;display:flex;align-items:center;gap:5px}
+.cartItem .quantity button{padding:2px 6px;border:none;border-radius:6px;background:#27ae60;color:#fff;cursor:pointer}
+.featured{padding:16px;display:flex;gap:10px;overflow-x:auto}
+.featured .card{flex:0 0 200px}
+.price-range{display:flex;align-items:center;gap:8px;margin:12px 16px}
+@media(max-width:600px){
+  header{flex-direction:column;align-items:flex-start}
+  header input, header select{width:100%;margin-top:8px}
+  .products{grid-template-columns:repeat(auto-fill,minmax(120px,1fr))}
+  .detailBox{width:95%}
+}
+</style>
+</head>
+
+<body>
+<header>
+  <div class="logo">
+    <img src="shose logo.png" alt="UMARI SHOES Logo">
+    <h1>UMARI SHOES</h1>
+  </div>
+  <select id="language" onchange="changeLang()">
+    <option value="ps">پښتو</option>
+    <option value="fa">فارسی</option>
+  </select>
+  <input id="search" placeholder="بوټ ولټوئ..." onkeyup="searchShoes()">
+  <select id="sort" onchange="sortShoes()">
+    <option value="">ترتیب</option>
+    <option value="price-asc">قیمت ټیټ→لوړ</option>
+    <option value="price-desc">قیمت لوړ→ټیټ</option>
+    <option value="name-asc">نوم A→Z</option>
+    <option value="name-desc">نوم Z→A</option>
+  </select>
+  <button onclick="toggleDark()">🌓</button>
+  <div class="socials">
+    <a class="fb" href="https://www.facebook.com/" target="_blank">Facebook</a>
+    <a class="wa" href="https://wa.me/93770803564" target="_blank">WhatsApp</a>
+  </div>
+</header>
+
+<div class="featured" id="featured"></div>
+<div class="price-range">
+  <label id="priceLabel">Max قیمت: <span id="maxVal">3000</span> AFN</label>
+  <input type="range" id="priceFilter" min="0" max="5000" value="3000" oninput="filterPrice()">
+</div>
+
+<div id="home" class="products"></div>
+
+<div id="detail">
+<button class="back" onclick="goHome()" id="backBtn">⬅ بېرته</button>
+<div class="detailBox">
+<img id="dimg">
+<h3 id="dtitle"></h3>
+<div class="price" id="dprice"></div>
+<div class="old" id="dold"></div>
+<p id="ddesc"></p>
+<div class="quantity">
+<label id="qtyLabel">Quantity:</label>
+<input type="number" id="qty" value="1" min="1" style="width:50px">
+</div>
+<button class="add" onclick="addToCart()" id="addBtn">Cart ته اضافه کړه</button>
+<button class="buy" onclick="orderNow()" id="buyBtn">WhatsApp Order</button>
+</div>
+</div>
+
+<button id="cartBtn" onclick="openCart()">🛒</button>
+
+<div id="cart">
+<button class="back" onclick="closeCart()" id="cartBackBtn">⬅ بېرته</button>
+<h2 id="cartTitle">ستاسو Cart</h2>
+<div id="cartItems"></div>
+<h3 id="totalPrice"></h3>
+<button class="buy" onclick="orderCart()" id="cartOrderBtn">WhatsApp Order</button>
+</div>
+
+<script>
+const WA="770803564";
+const shoes=[
+{t:{ps:"مردانه سپورټ",fa:"کفش ورزشی مردانه"},p:1800,o:2300,i:"https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa",d:{ps:"قوي او آرام",fa:"محکم و راحت"}},
+{t:{ps:"ښځینه فېشن",fa:"کفش زنانه فشن"},p:1500,o:2000,i:"https://images.unsplash.com/photo-1543163521-1bf539c55dd2",d:{ps:"ډېر ښکلی",fa:"زیبا و شیک"}},
+{t:{ps:"ماشوم بوټ",fa:"کفش بچه گانه"},p:900,o:1200,i:"https://images.unsplash.com/photo-1514989940723-e8e51635b782",d:{ps:"نرم او سپک",fa:"نرم و سبک"}},
+{t:{ps:"مردانه رسمي",fa:"کفش رسمی مردانه"},p:2200,o:2700,i:"https://images.unsplash.com/photo-1600180758890-6b94519a8ba3",d:{ps:"دفتر لپاره",fa:"مناسب دفتر"}},
+{t:{ps:"ښځینه هیل",fa:"کفش پاشنه بلند زنانه"},p:2000,o:2600,i:"https://images.unsplash.com/photo-1543163521-1bf539c55dd2",d:{ps:"فېشن‌دار",fa:"فشن دار"}}
+];
+
+let current=null,cart=[],lang="ps";
+
+// --- Language Functions ---
+function changeLang(){
+lang=document.getElementById("language").value;
+updateTexts();
+load();
+loadFeatured();
+renderCart();
+}
+
+function updateTexts(){
+if(lang==="fa"){
+search.placeholder="جستجوی کفش...";
+document.getElementById("priceLabel").innerText="حداکثر قیمت: ";
+document.getElementById("backBtn").innerText="⬅ بازگشت";
+document.getElementById("qtyLabel").innerText="تعداد:";
+document.getElementById("addBtn").innerText="افزودن به سبد";
+document.getElementById("buyBtn").innerText="سفارش واتساپ";
+document.getElementById("cartTitle").innerText="سبد خرید شما";
+document.getElementById("cartBackBtn").innerText="⬅ بازگشت";
+document.getElementById("cartOrderBtn").innerText="سفارش واتساپ";
+}else{
+search.placeholder="بوټ ولټوئ...";
+document.getElementById("priceLabel").innerText="Max قیمت: ";
+document.getElementById("backBtn").innerText="⬅ بېرته";
+document.getElementById("qtyLabel").innerText="Quantity:";
+document.getElementById("addBtn").innerText="Cart ته اضافه کړه";
+document.getElementById("buyBtn").innerText="WhatsApp Order";
+document.getElementById("cartTitle").innerText="ستاسو Cart";
+document.getElementById("cartBackBtn").innerText="⬅ بېرته";
+document.getElementById("cartOrderBtn").innerText="WhatsApp Order";
+}
+}
+
+// --- Load Products ---
+function load(list=shoes){
+home.innerHTML="";
+list.forEach((s,i)=>{
+home.innerHTML+=`
+<div class="card" onclick="openDesigns(${i})">
+<img src="${s.i}">
+<div class="info">
+<h4>${s.t[lang]}</h4>
+<div class="price">${s.p} AFN</div>
+<div class="old">${s.o} AFN</div>
+</div>
+</div>`;
+});
+}
+
+function loadFeatured(){
+let featuredList=shoes.slice(0,3);
+featured.innerHTML="";
+featuredList.forEach((s,i)=>{
+featured.innerHTML+=`
+<div class="card" onclick="openDesigns(${i})">
+<img src="${s.i}">
+<div class="info"><h4>${s.t[lang]}</h4></div>
+</div>`;
+});
+}
+
+// --- Designs ---
+function openDesigns(i){
+const s=shoes[i];
+home.innerHTML="";
+for(let d=1;d<=20;d++){
+home.innerHTML+=`
+<div class="card" onclick="showDetail(${i},${d})">
+<img src="${s.i}">
+<div class="info"><h4>${s.t[lang]} - D${d}</h4><div class="price">${s.p} AFN</div></div>
+</div>`;
+}
+}
+
+function showDetail(i,d){
+current={...shoes[i],design:d};
+current.qty=parseInt(qty.value)||1;
+home.style.display="none";
+detail.style.display="block";
+dimg.src=current.i;
+dtitle.innerText=current.t[lang]+" (Design "+d+")";
+dprice.innerText=current.p+" AFN";
+dold.innerText=current.o+" AFN";
+ddesc.innerText=current.d[lang];
+}
+
+function goHome(){location.reload()}
+
+// --- Cart ---
+function saveCart(){localStorage.setItem("cart",JSON.stringify(cart))}
+function loadCart(){cart=JSON.parse(localStorage.getItem("cart")||"[]")}
+
+function addToCart(){
+current.qty=parseInt(qty.value)||1;
+let exist=cart.find(c=>c.t[lang]===current.t[lang] && c.design===current.design);
+if(exist){exist.qty+=current.qty;} else {cart.push({...current});}
+alert(lang==="fa"?"به سبد اضافه شد":"Cart ته اضافه شو");
+saveCart();
+}
+
+function openCart(){document.getElementById("cart").style.display="block";renderCart()}
+function closeCart(){document.getElementById("cart").style.display="none"}
+
+function renderCart(){
+cartItems.innerHTML="";
+let total=0;
+cart.forEach((c,i)=>{
+total+=c.p*c.qty;
+cartItems.innerHTML+=`
+<div class="cartItem">
+<img src="${c.i}">
+<div><b>${c.t[lang]} D${c.design}</b><br>${c.p} AFN x ${c.qty}</div>
+<div class="quantity">
+<button onclick="updateQty(${i},-1)">-</button>${c.qty}<button onclick="updateQty(${i},1)">+</button>
+</div>
+</div>`;
+});
+totalPrice.innerText=(lang==="fa"?"کل: ":"ټول قیمت: ")+total+" AFN";
+}
+
+function updateQty(i,delta){
+cart[i].qty+=delta;
+if(cart[i].qty<1) cart.splice(i,1);
+saveCart();
+renderCart();
+}
+
+// --- Orders ---
+function orderNow(){
+let msg=(lang==="fa"?"سلام، من این کفش را می‌خواهم:%0A":"سلام، زه دا بوټ غواړم:%0A")+
+`${current.t[lang]} Design ${current.design} x${current.qty}%0A${lang==="fa"?"قیمت":"قیمت"}: ${current.p*current.qty} AFN`;
+window.open(`https://wa.me/93${WA}?text=${msg}`);
+}
+
+function orderCart(){
+let total=0,msg=(lang==="fa"?"سلام، سفارش من:%0A":"سلام، زما Order:%0A");
+cart.forEach(c=>{
+msg+=`${c.t[lang]} D${c.design} x${c.qty} - ${c.p*c.qty} AFN%0A`;
+total+=c.p*c.qty;
+});
+msg+=(lang==="fa"?"کل: ":"ټول: ")+total+" AFN";
+window.open(`https://wa.me/93${WA}?text=${msg}`);
+}
+
+// --- Search & Sort ---
+function searchShoes(){
+const q=search.value.toLowerCase();
+load(shoes.filter(s=>s.t[lang].toLowerCase().includes(q)));
+}
+
+function sortShoes(){
+const v=sort.value;
+let sorted=[...shoes];
+if(v==="price-asc") sorted.sort((a,b)=>a.p-b.p);
+if(v==="price-desc") sorted.sort((a,b)=>b.p-a.p);
+if(v==="name-asc") sorted.sort((a,b)=>a.t[lang].localeCompare(b.t[lang]));
+if(v==="name-desc") sorted.sort((a,b)=>b.t[lang].localeCompare(a.t[lang]));
+load(sorted);
+}
+
+function filterPrice(){
+const val=parseInt(priceFilter.value);
+maxVal.innerText=val;
+load(shoes.filter(s=>s.p<=val));
+}
+
+function toggleDark(){document.body.classList.toggle("dark")}
+
+// --- Init ---
+load();
+loadFeatured();
+loadCart();
+updateTexts();
+</script>
+</body>
+</html>
